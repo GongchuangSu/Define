@@ -32,7 +32,7 @@ public final class Route
      */
 	private static List<Vertex> nodes;
 	private static List<Edge> edges;
-	static int vlen = 300; // 顶点个数
+	static int vlen = 660; // 顶点个数
 	static int elen ; // 边个数
     static BufferedReader br;
     static String line; 
@@ -42,48 +42,30 @@ public final class Route
     private static Map<Vertex, Integer> distance;
     private static Vertex node;
     static int total;
+    private static String resultStr;
+    private static Vertex firstNode;
+    private static Vertex lastNode;
 	  
     public static String searchRoute(String graphContent, String condition)
     {   	
-    	Route.testExcute(graphContent, condition);
-    	return "";
+    	resultStr = Route.testExcute(graphContent, condition);
+    	return resultStr;
     }    
     
-    public static void testExcute(String graphContent, String condition) {
+    public static String testExcute(String graphContent, String condition) {
         nodes = new ArrayList<Vertex>();
         edges = new ArrayList<Edge>();
         passNodes = new HashSet<Vertex>();
         optimalPath = new LinkedList<Vertex>();
-        distance = new HashMap<Vertex, Integer>();
-        
-        // 初始化必须经过的顶点
-        passNodes.add(new Vertex("Node_" + 55, "Node_" + 55));
-        passNodes.add(new Vertex("Node_" + 22, "Node_" + 22));
-        passNodes.add(new Vertex("Node_" + 33, "Node_" + 33));
-        passNodes.add(new Vertex("Node_" + 15, "Node_" + 15));
-        passNodes.add(new Vertex("Node_" + 198, "Node_" + 198));
-        passNodes.add(new Vertex("Node_" + 123, "Node_" + 123));
-        passNodes.add(new Vertex("Node_" + 134, "Node_" + 134));
-        passNodes.add(new Vertex("Node_" + 156, "Node_" + 156));
-        passNodes.add(new Vertex("Node_" + 255, "Node_" + 255));
-        passNodes.add(new Vertex("Node_" + 258, "Node_" + 258));
-        passNodes.add(new Vertex("Node_" + 236, "Node_" + 236));
-        passNodes.add(new Vertex("Node_" + 77, "Node_" + 77));
-        passNodes.add(new Vertex("Node_" + 27, "Node_" + 27));
-        passNodes.add(new Vertex("Node_" + 233, "Node_" + 233));
-        passNodes.add(new Vertex("Node_" + 85, "Node_" + 85));
-        passNodes.add(new Vertex("Node_" + 20, "Node_" + 20));
-        passNodes.add(new Vertex("Node_" + 66, "Node_" + 66));
-        passNodes.add(new Vertex("Node_" + 222, "Node_" + 222));
-        passNodes.add(new Vertex("Node_" + 238, "Node_" + 238));
-        passNodes.add(new Vertex("Node_" + 79, "Node_" + 79));
+        distance = new HashMap<Vertex, Integer>();  
         
         // 初始化顶点
         for (int i = 0; i < vlen; i++) {
-          Vertex location = new Vertex("Node_" + i, "Node_" + i);
+          Vertex location = new Vertex(Integer.toString(i), Integer.toString(i));
           nodes.add(location);
         }
 
+        // 初始化边
         br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(graphContent.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
         try {
 			while ( (line = br.readLine()) != null ) {  
@@ -98,9 +80,29 @@ public final class Route
 			e.printStackTrace();
 		}
         
+        // 初始化必须经过的顶点
+        br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(condition.getBytes(Charset.forName("utf8"))), Charset.forName("utf8")));
+        try {
+			while ( (line = br.readLine()) != null ) {  
+			    String item[] = line.split(",");
+			    firstNode = nodes.get(Integer.parseInt(item[0]));
+			    lastNode = nodes.get(Integer.parseInt(item[1]));
+			    String item1[] = item[2].split("\\|");
+			    for(int i = 0;i<item1.length;i++){
+			    	passNodes.add(new Vertex(item1[i], item1[i]));
+			    }			    
+			}
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
         Graph graph = new Graph(nodes, edges);
         DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph); // 导入图信息
-        distance = dijkstra.execute(nodes.get(19)); // 给出源点
+        distance = dijkstra.execute(firstNode, passNodesMark); // 给出源点
         LinkedList<Vertex> path = null;
         
         // 分段求最短路径    
@@ -126,14 +128,13 @@ public final class Route
                 optimalPath.remove(node);
         	}           
             
-            //passNodes.remove(node);
             it = passNodes.iterator();
-            distance = dijkstra.execute(node); 
+            distance = dijkstra.execute(node, passNodesMark); 
         }
         
         // passNodes最后一个顶点连接终点路径
-        distance = dijkstra.execute(node); 
-        path = dijkstra.getPath(nodes.get(87)); 
+        distance = dijkstra.execute(node, passNodesMark); 
+        path = dijkstra.getPath(lastNode); 
     	if(assertNotNull(path)){
             for (Vertex vertex : path) {                	
             	optimalPath.add(vertex);
@@ -141,11 +142,12 @@ public final class Route
     	}
         
         // 输出最优路径
+    	String resultStr = "";
         for (Vertex vertex : optimalPath) {
-        	System.out.println(vertex);
+        	resultStr = resultStr + vertex + "|";        	
         }     
-        
-        // 求路径总权重
+        System.out.println(resultStr.substring(0,resultStr.length()-1));
+        return resultStr;
 
            
     }

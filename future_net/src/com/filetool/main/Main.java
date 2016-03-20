@@ -35,7 +35,7 @@ public class Main
         String resultStr = Route.searchRoute(graphContent, conditionContent);
 
         // 写入输出文件
-        //FileUtil.write(resultFilePath, resultStr, false);
+        FileUtil.write(resultFilePath, resultStr, false);
 
         LogUtil.printLog("End");
     }

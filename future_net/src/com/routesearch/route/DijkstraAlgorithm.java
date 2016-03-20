@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,14 @@ public class DijkstraAlgorithm {
 	   * 功能：根据给出的源点寻找到其余顶点的最优路径
 	   * @param source
 	   */
-	  public Map<Vertex, Integer> execute(Vertex source) {
+	  public Map<Vertex, Integer> execute(Vertex source, Set<Vertex> passNodesMark) {
 	    settledNodes = new HashSet<Vertex>();
 	    unSettledNodes = new HashSet<Vertex>();
+	    Iterator<Vertex> it = passNodesMark.iterator();
+        while(it.hasNext()){
+        	// 在passNodes中寻找最短路径顶点    
+        	settledNodes.add(it.next());
+        }
 	    distance = new HashMap<Vertex, Integer>();
 	    predecessors = new HashMap<Vertex, Vertex>();
 	    distance.put(source, 0);
