@@ -45,6 +45,7 @@ public final class Route
     private static String resultStr;
     private static Vertex firstNode;
     private static Vertex lastNode;
+    private static Vertex tempNode; 
 	  
     public static String searchRoute(String graphContent, String condition)
     {   	
@@ -141,14 +142,21 @@ public final class Route
             }
     	}
         
-        // 输出最优路径
+    	optimalPath.removeFirst(); // 去除第一个点
     	String resultStr = "";
         for (Vertex vertex : optimalPath) {
         	resultStr = resultStr + vertex + "|";        	
         }     
         System.out.println(resultStr.substring(0,resultStr.length()-1));
-        return resultStr;
-
+        // 输出总权重
+    	outputTotalCost();
+    	// 输出最优路径
+    	if(optimalPath == null){
+    		return "NA";
+    	}
+    	else
+    	return outputOptPath();
+    	
            
     }
 
@@ -157,7 +165,65 @@ public final class Route
     	    Edge lane = new Edge(laneId,nodes.get(sourceLocNo), nodes.get(destLocNo), duration);
     	    edges.add(lane);
     	  }
-
+ 
+	/**
+	 * 功能：输出总权重
+	 * @return
+	 */
+	private static void outputTotalCost() {
+		int totalCost = 0;
+    	tempNode = firstNode;
+        for (Vertex vertex : optimalPath) {        	
+        	totalCost = totalCost + getWeight(tempNode, vertex);     
+        	tempNode = vertex;
+        }     
+        System.out.println(totalCost);
+	}
+	
+	/**
+	 * 功能：输出最优路径
+	 */
+	private static String outputOptPath() {
+		String resultStr = "";
+    	tempNode = firstNode;
+        for (Vertex vertex : optimalPath) {        	
+        	resultStr = resultStr + getLinkID(tempNode, vertex) + "|";     
+        	tempNode = vertex;
+        }     
+        System.out.println(resultStr.substring(0,resultStr.length()-1));
+        return resultStr.substring(0,resultStr.length()-1);
+	}
+	
+	/**
+	 * 功能：取得两顶点间边的ID
+	 * @param sourceLocNo
+	 * @param destLocNo
+	 * @return
+	 */
+	private static String getLinkID(Vertex sourceLocNo, Vertex destLocNo){
+		for(Edge edge:edges){
+			if(edge.getSource().equals(sourceLocNo) && edge.getDestination().equals(destLocNo)){
+				return edge.getId();			
+			}
+		}
+		return "-1";
+	}
+	
+	/**
+	 * 功能：取得边对应的权重
+	 * @param sourceLocNo
+	 * @param destLocNo
+	 * @return
+	 */
+	private static int getWeight(Vertex sourceLocNo, Vertex destLocNo) {
+		for(Edge edge:edges){
+			if(edge.getSource().equals(sourceLocNo) && edge.getDestination().equals(destLocNo)){
+				return edge.getWeight();
+			}
+		}
+		return 0;
+	}
+	
 	private static boolean assertNotNull(LinkedList<Vertex> path) {
 		// TODO Auto-generated method stub
 		if(path == null)
