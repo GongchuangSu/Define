@@ -140,7 +140,29 @@ public class DijkstraAlgorithm {
 	      return d;
 	    }
 	  }
-
+	  
+	  /**
+	   * 功能：判断到某顶点的最优路径，是否经过其他指定顶点
+	   *       若包括，则返回true;
+	   *       若不包括，则返回false.
+	   * @param target
+	   * @param passNodes
+	   * @return
+	   */
+	  public boolean isPassOthers(Vertex target, Set<Vertex> passNodes){
+		    Vertex step = target;
+		    // 先检查路径是否存在
+		    if (predecessors.get(step) == null) {
+		      return false;
+		    }
+		    while (predecessors.get(step) != null) {
+		      step = predecessors.get(step);
+		      if(passNodes.contains(step))
+		    	  return true;
+		    }
+		  return false;
+	  }
+	  
 	  /**
 	   * 功能：根据终点，输出最短路径
 	   * @param target
@@ -161,5 +183,5 @@ public class DijkstraAlgorithm {
 	    // Put it into the correct order
 	    Collections.reverse(path);
 	    return path;
-	  }
+	  }	  
 }
